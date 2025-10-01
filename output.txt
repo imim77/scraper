@@ -1,0 +1,94 @@
+=== RUN   TestGetH1FromHTML
+=== RUN   TestGetH1FromHTML/basic_h1_tag
+=== RUN   TestGetH1FromHTML/no_h1_tag
+=== RUN   TestGetH1FromHTML/multiple_h1_tags
+--- PASS: TestGetH1FromHTML (0.00s)
+    --- PASS: TestGetH1FromHTML/basic_h1_tag (0.00s)
+    --- PASS: TestGetH1FromHTML/no_h1_tag (0.00s)
+    --- PASS: TestGetH1FromHTML/multiple_h1_tags (0.00s)
+=== RUN   TestGetFirstParagraphFromHTML
+=== RUN   TestGetFirstParagraphFromHTML/outside_and_main_paragraph
+=== RUN   TestGetFirstParagraphFromHTML/no_main_tag_-_gets_first_paragraph
+=== RUN   TestGetFirstParagraphFromHTML/main_with_multiple_paragraphs
+=== RUN   TestGetFirstParagraphFromHTML/no_paragraphs
+=== RUN   TestGetFirstParagraphFromHTML/empty_paragraph
+--- PASS: TestGetFirstParagraphFromHTML (0.00s)
+    --- PASS: TestGetFirstParagraphFromHTML/outside_and_main_paragraph (0.00s)
+    --- PASS: TestGetFirstParagraphFromHTML/no_main_tag_-_gets_first_paragraph (0.00s)
+    --- PASS: TestGetFirstParagraphFromHTML/main_with_multiple_paragraphs (0.00s)
+    --- PASS: TestGetFirstParagraphFromHTML/no_paragraphs (0.00s)
+    --- PASS: TestGetFirstParagraphFromHTML/empty_paragraph (0.00s)
+=== RUN   TestGetURLsFromHTML
+=== RUN   TestGetURLsFromHTML/relative_URL
+=== RUN   TestGetURLsFromHTML/absolute_and_relative_URLs
+=== RUN   TestGetURLsFromHTML/no_href
+=== RUN   TestGetURLsFromHTML/bad_HTML
+=== RUN   TestGetURLsFromHTML/invalid_href_URL
+Error while parsing:  parse ":\\\\invalidURL": missing protocol scheme
+=== RUN   TestGetURLsFromHTML/single_absolute_link
+=== RUN   TestGetURLsFromHTML/multiple_links
+=== RUN   TestGetURLsFromHTML/no_links
+--- PASS: TestGetURLsFromHTML (0.00s)
+    --- PASS: TestGetURLsFromHTML/relative_URL (0.00s)
+    --- PASS: TestGetURLsFromHTML/absolute_and_relative_URLs (0.00s)
+    --- PASS: TestGetURLsFromHTML/no_href (0.00s)
+    --- PASS: TestGetURLsFromHTML/bad_HTML (0.00s)
+    --- PASS: TestGetURLsFromHTML/invalid_href_URL (0.00s)
+    --- PASS: TestGetURLsFromHTML/single_absolute_link (0.00s)
+    --- PASS: TestGetURLsFromHTML/multiple_links (0.00s)
+    --- PASS: TestGetURLsFromHTML/no_links (0.00s)
+=== RUN   TestGetImagesFromHTML
+=== RUN   TestGetImagesFromHTML/absolute_URL
+=== RUN   TestGetImagesFromHTML/relative_URL
+=== RUN   TestGetImagesFromHTML/multiple_images
+=== RUN   TestGetImagesFromHTML/no_images
+=== RUN   TestGetImagesFromHTML/img_without_src
+=== RUN   TestGetImagesFromHTML/invalid_src_URL
+Error while parsing:  parse ":\\\\invalidURL": missing protocol scheme
+=== RUN   TestGetImagesFromHTML/relative_path_without_leading_slash
+=== RUN   TestGetImagesFromHTML/mixed_absolute_and_relative
+--- PASS: TestGetImagesFromHTML (0.00s)
+    --- PASS: TestGetImagesFromHTML/absolute_URL (0.00s)
+    --- PASS: TestGetImagesFromHTML/relative_URL (0.00s)
+    --- PASS: TestGetImagesFromHTML/multiple_images (0.00s)
+    --- PASS: TestGetImagesFromHTML/no_images (0.00s)
+    --- PASS: TestGetImagesFromHTML/img_without_src (0.00s)
+    --- PASS: TestGetImagesFromHTML/invalid_src_URL (0.00s)
+    --- PASS: TestGetImagesFromHTML/relative_path_without_leading_slash (0.00s)
+    --- PASS: TestGetImagesFromHTML/mixed_absolute_and_relative (0.00s)
+=== RUN   TestNormalizeURL
+=== RUN   TestNormalizeURL/remove_scheme
+=== RUN   TestNormalizeURL/Caps
+=== RUN   TestNormalizeURL/backslash
+--- PASS: TestNormalizeURL (0.00s)
+    --- PASS: TestNormalizeURL/remove_scheme (0.00s)
+    --- PASS: TestNormalizeURL/Caps (0.00s)
+    --- PASS: TestNormalizeURL/backslash (0.00s)
+=== RUN   TestExtractPageData
+=== RUN   TestExtractPageData/complete_page_with_all_elements
+=== RUN   TestExtractPageData/multiple_links_and_images
+=== RUN   TestExtractPageData/missing_h1
+=== RUN   TestExtractPageData/missing_paragraph
+=== RUN   TestExtractPageData/no_links
+=== RUN   TestExtractPageData/no_images
+=== RUN   TestExtractPageData/empty_page
+=== RUN   TestExtractPageData/main_tag_with_paragraph
+=== RUN   TestExtractPageData/complex_nested_structure
+    page_data_test.go:206: expected {H1:Article Title URL:https://blog.boot.dev/article FirstParagraph:This is the main content. OutgoingLinks:[https://blog.boot.dev/related https://external.com/resource] ImageURLs:[https://blog.boot.dev/article/header.jpg https://blog.boot.dev/content/image.png]}, got {H1:Article Title URL:https://blog.boot.dev/article FirstParagraph:This is the main content. OutgoingLinks:[https://blog.boot.dev/related https://external.com/resource] ImageURLs:[https://blog.boot.dev/header.jpg https://blog.boot.dev/content/image.png]}
+=== RUN   TestExtractPageData/invalid_links_and_images_should_be_skipped
+Error while parsing:  parse ":\\\\invalid": missing protocol scheme
+Error while parsing:  parse ":\\\\invalid": missing protocol scheme
+--- FAIL: TestExtractPageData (0.00s)
+    --- PASS: TestExtractPageData/complete_page_with_all_elements (0.00s)
+    --- PASS: TestExtractPageData/multiple_links_and_images (0.00s)
+    --- PASS: TestExtractPageData/missing_h1 (0.00s)
+    --- PASS: TestExtractPageData/missing_paragraph (0.00s)
+    --- PASS: TestExtractPageData/no_links (0.00s)
+    --- PASS: TestExtractPageData/no_images (0.00s)
+    --- PASS: TestExtractPageData/empty_page (0.00s)
+    --- PASS: TestExtractPageData/main_tag_with_paragraph (0.00s)
+    --- FAIL: TestExtractPageData/complex_nested_structure (0.00s)
+    --- PASS: TestExtractPageData/invalid_links_and_images_should_be_skipped (0.00s)
+FAIL
+exit status 1
+FAIL	github.com/imim77/crawler	0.201s
