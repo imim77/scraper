@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strconv"
 )
 
 func main() {
@@ -12,21 +13,37 @@ func main() {
 		fmt.Println("no website provided")
 		os.Exit(1)
 	}
-	if len(progArgs) > 1 {
+	if len(progArgs) > 3 {
 		fmt.Println("too many arguments provided")
 		os.Exit(1)
 	}
 	BASE_URL := progArgs[0]
+	max_conc, err := strconv.Atoi(progArgs[1])
+	if err != nil {
+		fmt.Printf("Error - conversion from string to int: %v", err)
+		return
+	}
+	max_page, err := strconv.Atoi(progArgs[2])
+	if err != nil {
+		fmt.Printf("Error - conversion from string to int: %v", err)
+		return
+	}
 
-	pages := make(map[string]int)
+	cfg, err := configure(BASE_URL, max_conc, max_page)
+	if err != nil {
+		fmt.Printf("Error - configure: %v", err)
+		return
+	}
 
 	fmt.Printf("starting crawl of: %s", BASE_URL)
 
-	crawlPage(BASE_URL, BASE_URL, pages)
+	cfg.wg.Add(1)
+	go cfg.crawlPage(BASE_URL)
+	cfg.wg.Wait()
 	fmt.Println("\n=== Crawl Results ===")
 
-	for normalizedURL, count := range pages {
-		fmt.Printf("%s: %d\n", normalizedURL, count)
+	for normalizedURL, count := range cfg.pages {
+		fmt.Printf("%s: %+v\n", normalizedURL, count)
 	}
 
 }

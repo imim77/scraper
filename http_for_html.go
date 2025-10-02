@@ -8,15 +8,6 @@ import (
 	"strings"
 )
 
-/*type config struct {
-	pages              map[string]PageData
-	baseURL            *url.URL
-	mu                 *sync.Mutex
-	concurrencyControl chan struct{}
-	wg                 *sync.WaitGroup
-}
-*/
-
 func getHTML(rawurl string) (string, error) {
 
 	req, err := http.NewRequest("GET", rawurl, nil)
@@ -47,20 +38,25 @@ func getHTML(rawurl string) (string, error) {
 	return string(resBody), nil
 }
 
-func crawlPage(rawBaseURL, rawCurrentURL string, pages map[string]int) {
-	parsedBase, err := url.Parse(rawBaseURL)
-	if err != nil {
-		fmt.Printf("Error parsing the baseURL to the URL struct%v\n", err)
+func (cfg *config) crawlPage(rawCurrentURL string) {
+	cfg.concurrencyControl <- struct{}{}
+	defer func() {
+		<-cfg.concurrencyControl
+		cfg.wg.Done()
+	}()
+	cfg.mu.Lock()
+	if len(cfg.pages) >= cfg.maxPages {
+		cfg.mu.Unlock()
 		return
 	}
-
+	cfg.mu.Unlock()
 	parsedCurrent, err := url.Parse(rawCurrentURL)
 	if err != nil {
 		fmt.Printf("Error parsing the baseURL to the URL struct%v\n", err)
 		return
 	}
 
-	if parsedBase.Hostname() != parsedCurrent.Hostname() {
+	if cfg.baseURL.Hostname() != parsedCurrent.Hostname() {
 		return
 	}
 	normalizedURL, err := normalizeURL(rawCurrentURL)
@@ -68,12 +64,10 @@ func crawlPage(rawBaseURL, rawCurrentURL string, pages map[string]int) {
 		fmt.Printf("Error normalizing URL %s: %v\n", rawCurrentURL, err)
 		return
 	}
-
-	if _, ok := pages[normalizedURL]; ok {
-		pages[normalizedURL]++
+	isFirst := cfg.addPageVisit(normalizedURL)
+	if !isFirst {
 		return
 	}
-	pages[normalizedURL] = 1
 
 	fmt.Printf("Crawling: %s\n", rawCurrentURL)
 	htmlfromurl, err := getHTML(rawCurrentURL)
@@ -81,14 +75,12 @@ func crawlPage(rawBaseURL, rawCurrentURL string, pages map[string]int) {
 		fmt.Printf("Error getting the HTML from URL: %s: %v\n", rawCurrentURL, err)
 	}
 
-	urls, err := getURLsFromHTML(htmlfromurl, parsedCurrent)
-	if err != nil {
-		fmt.Printf("Error parsing URLs from %s: %v\n", rawCurrentURL, err)
-		return
-	}
+	pageData := extractPageData(htmlfromurl, rawCurrentURL)
+	cfg.storePageData(normalizedURL, pageData)
 
-	for _, url := range urls {
-		crawlPage(rawBaseURL, url, pages)
+	for _, url := range pageData.OutgoingLinks {
+		cfg.wg.Add(1)
+		go cfg.crawlPage(url)
 	}
 
 }
