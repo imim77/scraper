@@ -41,9 +41,10 @@ func main() {
 	go cfg.crawlPage(BASE_URL)
 	cfg.wg.Wait()
 	fmt.Println("\n=== Crawl Results ===")
-
-	for normalizedURL, count := range cfg.pages {
+	writeCSVReport(cfg.pages, "report.csv")
+	/*for normalizedURL, count := range cfg.pages {
 		fmt.Printf("%s: %+v\n", normalizedURL, count)
 	}
+	*/
 
 }
