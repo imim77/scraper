@@ -4,8 +4,18 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"strings"
 )
+
+/*type config struct {
+	pages              map[string]PageData
+	baseURL            *url.URL
+	mu                 *sync.Mutex
+	concurrencyControl chan struct{}
+	wg                 *sync.WaitGroup
+}
+*/
 
 func getHTML(rawurl string) (string, error) {
 
@@ -35,4 +45,50 @@ func getHTML(rawurl string) (string, error) {
 	}
 
 	return string(resBody), nil
+}
+
+func crawlPage(rawBaseURL, rawCurrentURL string, pages map[string]int) {
+	parsedBase, err := url.Parse(rawBaseURL)
+	if err != nil {
+		fmt.Printf("Error parsing the baseURL to the URL struct%v\n", err)
+		return
+	}
+
+	parsedCurrent, err := url.Parse(rawCurrentURL)
+	if err != nil {
+		fmt.Printf("Error parsing the baseURL to the URL struct%v\n", err)
+		return
+	}
+
+	if parsedBase.Hostname() != parsedCurrent.Hostname() {
+		return
+	}
+	normalizedURL, err := normalizeURL(rawCurrentURL)
+	if err != nil {
+		fmt.Printf("Error normalizing URL %s: %v\n", rawCurrentURL, err)
+		return
+	}
+
+	if _, ok := pages[normalizedURL]; ok {
+		pages[normalizedURL]++
+		return
+	}
+	pages[normalizedURL] = 1
+
+	fmt.Printf("Crawling: %s\n", rawCurrentURL)
+	htmlfromurl, err := getHTML(rawCurrentURL)
+	if err != nil {
+		fmt.Printf("Error getting the HTML from URL: %s: %v\n", rawCurrentURL, err)
+	}
+
+	urls, err := getURLsFromHTML(htmlfromurl, parsedCurrent)
+	if err != nil {
+		fmt.Printf("Error parsing URLs from %s: %v\n", rawCurrentURL, err)
+		return
+	}
+
+	for _, url := range urls {
+		crawlPage(rawBaseURL, url, pages)
+	}
+
 }

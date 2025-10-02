@@ -17,12 +17,16 @@ func main() {
 		os.Exit(1)
 	}
 	BASE_URL := progArgs[0]
+
+	pages := make(map[string]int)
+
 	fmt.Printf("starting crawl of: %s", BASE_URL)
-	websiteHTML, err := getHTML(BASE_URL)
-	if err != nil {
-		fmt.Println("Error occured while getting the website's HTML")
-		os.Exit(1)
+
+	crawlPage(BASE_URL, BASE_URL, pages)
+	fmt.Println("\n=== Crawl Results ===")
+
+	for normalizedURL, count := range pages {
+		fmt.Printf("%s: %d\n", normalizedURL, count)
 	}
-	fmt.Println(websiteHTML)
 
 }
